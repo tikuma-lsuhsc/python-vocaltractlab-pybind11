@@ -1,0 +1,6 @@
+[submodule "vocaltractlab_backend"]
+	path = vocaltractlab_backend
+	url = https://tikuma-lsuhsc@github.com/tikuma-lsuhsc/VocalTractLabBackend-dev
+[submodule "pybind11"]
+	path = pybind11
+	url = https://github.com/pybind/pybind11.git
