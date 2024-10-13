@@ -1,6 +1,11 @@
 pybind11_add_module(${PROJECT_NAME} 
     __init__.cpp
-    AnatomyParams.cpp
     Speaker.cpp
-    # VocalTract.cpp
+    Glottis.cpp
+    GeometricGlottis.cpp
+    TriangularGlottis.cpp
+    TwoMassModel.cpp
+    GlottisFactory.cpp
+    VocalTract.cpp
+    AnatomyParams.cpp
 )

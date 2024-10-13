@@ -4,247 +4,307 @@
 #include <fmt/format.h>
 
 #include <VocalTractLabBackend/VocalTract.h>
-#include <VocalTractLabBackend/XmlNode.h>
 
 using namespace fmt::literals;
 namespace py = pybind11;
 
-// template <typename Sequence>
-// inline pybind11::array_t<typename Sequence::value_type> as_pyarray(Sequence &&seq) {
-//     auto size                         = seq.size();
-//     auto data                         = seq.data();
-//     std::unique_ptr<Sequence> seq_ptr = std::make_unique<Sequence>(std::move(seq));
-//     auto capsule = pybind11::capsule(seq_ptr.get(), [](void *p) { std::unique_ptr<Sequence>(reinterpret_cast<Sequence *>(p)); });
-//     seq_ptr.release();
-//     return pybind11::array({size}, {sizeof(typename Sequence::value_type)}, data, capsule);
-// }
-
-PYBIND11_MODULE(vocaltractlab, m)
+void initGlottis(py::module &m)
 {
-    py::class_<VocalTract> vocal_tract(m, "VocalTract");
+  py::class_<VocalTract> vocal_tract(m, "VocalTract");
 
-    vocal_tract.def(py::init<>());
-    // .def(py::init<XmlNode&>())
+  vocal_tract.def_property_readonly_static("NUM_EPIGLOTTIS_RIBS", [](py::object /* self */)
+                                           { return VocalTract::NUM_EPIGLOTTIS_RIBS; })
+      .def_property_readonly_static("NUM_EPIGLOTTIS_POINTS", [](py::object /* self */)
+                                    { return VocalTract::NUM_EPIGLOTTIS_POINTS; })
+      .def_property_readonly_static("NUM_UVULA_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_UVULA_RIBS; })
+      .def_property_readonly_static("NUM_UVULA_POINTS", [](py::object /* self */)
+                                    { return VocalTract::NUM_UVULA_POINTS; })
+      .def_property_readonly_static("NUM_LARYNX_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_LARYNX_RIBS; })
+      .def_property_readonly_static("NUM_PHARYNX_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_PHARYNX_RIBS; })
+      .def_property_readonly_static("NUM_VELUM_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_VELUM_RIBS; })
+      .def_property_readonly_static("NUM_PALATE_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_PALATE_RIBS; })
+      .def_property_readonly_static("NUM_JAW_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_JAW_RIBS; })
+      .def_property_readonly_static("NUM_THROAT_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_THROAT_RIBS; })
+      .def_property_readonly_static("NUM_UPPER_COVER_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_UPPER_COVER_RIBS; })
+      .def_property_readonly_static("NUM_UPPER_COVER_POINTS", [](py::object /* self */)
+                                    { return VocalTract::NUM_UPPER_COVER_POINTS; })
+      .def_property_readonly_static("NUM_LOWER_COVER_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_LOWER_COVER_RIBS; })
+      .def_property_readonly_static("NUM_LOWER_COVER_POINTS", [](py::object /* self */)
+                                    { return VocalTract::NUM_LOWER_COVER_POINTS; })
+      .def_property_readonly_static("NUM_DYNAMIC_TONGUE_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_DYNAMIC_TONGUE_RIBS; })
+      .def_property_readonly_static("NUM_STATIC_TONGUE_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_STATIC_TONGUE_RIBS; })
+      .def_property_readonly_static("NUM_TONGUE_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_TONGUE_RIBS; })
+      .def_property_readonly_static("NUM_TONGUE_POINTS", [](py::object /* self */)
+                                    { return VocalTract::NUM_TONGUE_POINTS; })
+      .def_property_readonly_static("MAX_TONGUE_RIBS_GLOBAL", [](py::object /* self */)
+                                    { return VocalTract::MAX_TONGUE_RIBS_GLOBAL; })
+      .def_property_readonly_static("NUM_TEETH_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_TEETH_RIBS; })
+      .def_property_readonly_static("NUM_TEETH_POINTS", [](py::object /* self */)
+                                    { return VocalTract::NUM_TEETH_POINTS; })
+      .def_property_readonly_static("NUM_LIP_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_LIP_RIBS; })
+      .def_property_readonly_static("NUM_INNER_LIP_POINTS", [](py::object /* self */)
+                                    { return VocalTract::NUM_INNER_LIP_POINTS; })
+      .def_property_readonly_static("NUM_OUTER_LIP_POINTS", [](py::object /* self */)
+                                    { return VocalTract::NUM_OUTER_LIP_POINTS; })
+      .def_property_readonly_static("NUM_LIP_POINTS", [](py::object /* self */)
+                                    { return VocalTract::NUM_LIP_POINTS; })
+      .def_property_readonly_static("NUM_FILL_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_FILL_RIBS; })
+      .def_property_readonly_static("NUM_FILL_POINTS", [](py::object /* self */)
+                                    { return VocalTract::NUM_FILL_POINTS; })
+      .def_property_readonly_static("NUM_RADIATION_RIBS", [](py::object /* self */)
+                                    { return VocalTract::NUM_RADIATION_RIBS; })
+      .def_property_readonly_static("NUM_RADIATION_POINTS", [](py::object /* self */)
+                                    { return VocalTract::NUM_RADIATION_POINTS; })
 
-  // static const int NUM_EPIGLOTTIS_RIBS = 4;
-  // static const int NUM_EPIGLOTTIS_POINTS = 5;
-  // static const int NUM_UVULA_RIBS = 4;
-  // static const int NUM_UVULA_POINTS = 5;
+      // ****************************************************************
+      // Constants for the cross-sections.
+      // ****************************************************************
+      .def_property_readonly_static("NUM_PROFILE_SAMPLES", [](py::object /* self */)
+                                    { return VocalTract::NUM_PROFILE_SAMPLES; })
+      .def_property_readonly_static("PROFILE_LENGTH", [](py::object /* self */)
+                                    { return VocalTract::PROFILE_LENGTH; })
+      .def_property_readonly_static("PROFILE_SAMPLE_LENGTH", [](py::object /* self */)
+                                    { return VocalTract::PROFILE_SAMPLE_LENGTH; })
+      .def_property_readonly_static("INVALID_PROFILE_SAMPLE", [](py::object /* self */)
+                                    { return VocalTract::INVALID_PROFILE_SAMPLE; })
+      .def_property_readonly_static("MIN_PROFILE_VALUE", [](py::object /* self */)
+                                    { return VocalTract::MIN_PROFILE_VALUE; })
+      .def_property_readonly_static("MAX_PROFILE_VALUE", [](py::object /* self */)
+                                    { return VocalTract::MAX_PROFILE_VALUE; })
+      .def_property_readonly_static("EXTREME_PROFILE_VALUE", [](py::object /* self */)
+                                    { return VocalTract::EXTREME_PROFILE_VALUE; })
 
-  // static const int NUM_LARYNX_RIBS  = 5;
-  // static const int NUM_PHARYNX_RIBS = 3;
-  // static const int NUM_VELUM_RIBS   = 6;
-  // static const int NUM_PALATE_RIBS  = 9;    ///< for both upper and lower jaw
-  // static const int NUM_JAW_RIBS     = NUM_PALATE_RIBS;
-  // static const int NUM_THROAT_RIBS  = NUM_PHARYNX_RIBS;
+      // ****************************************************************
+      // Other constants.
+      // ****************************************************************
+      .def_property_readonly_static("NUM_CENTERLINE_POINTS_EXPONENT", [](py::object /* self */)
+                                    { return VocalTract::NUM_CENTERLINE_POINTS_EXPONENT; })
+      .def_property_readonly_static("NUM_CENTERLINE_POINTS", [](py::object /* self */)
+                                    { return VocalTract::NUM_CENTERLINE_POINTS; })
+      .def_property_readonly_static("NUM_TUBE_SECTIONS", [](py::object /* self */)
+                                    { return VocalTract::NUM_TUBE_SECTIONS; })
+      .def_property_readonly_static("NUM_PHARYNX_SECTIONS", [](py::object /* self */)
+                                    { return VocalTract::NUM_PHARYNX_SECTIONS; })
+      .def_property_readonly_static("PIRIFORM_FOSSA_SECTION", [](py::object /* self */)
+                                    { return VocalTract::PIRIFORM_FOSSA_SECTION; })
 
-  // static const int NUM_UPPER_COVER_RIBS = NUM_LARYNX_RIBS + NUM_PHARYNX_RIBS + NUM_VELUM_RIBS + NUM_JAW_RIBS;
-  // static const int NUM_UPPER_COVER_POINTS = 6;
+      // ****************************************************************
+      // Variables.
+      // ****************************************************************
 
-  // static const int NUM_LOWER_COVER_RIBS = NUM_LARYNX_RIBS + NUM_THROAT_RIBS + NUM_JAW_RIBS;
-  // static const int NUM_LOWER_COVER_POINTS = 5;
+      .def_property_readwrite("surface", &VocalTract::surface)
+      .def_property_readwrite("param", &VocalTract::param)
+      .def_property_readwrite("shapes", &VocalTract::shapes)
+      .def_property_readwrite("emaPoints", &VocalTract::emaPoints)
 
-  // static const int NUM_DYNAMIC_TONGUE_RIBS = 33;
-  // static const int NUM_STATIC_TONGUE_RIBS  = 4;
-  // static const int NUM_TONGUE_RIBS = NUM_DYNAMIC_TONGUE_RIBS + NUM_STATIC_TONGUE_RIBS;
-  // static const int NUM_TONGUE_POINTS = 11;
-  // static const int MAX_TONGUE_RIBS_GLOBAL = 128;
+      .def_property_readwrite("tongueRib", &VocalTract::tongueRib)
 
-  // static const int NUM_TEETH_RIBS = 3*(NUM_JAW_RIBS-1) + 1;
-  // static const int NUM_TEETH_POINTS = 5;
-    
-  // static const int NUM_LIP_RIBS = NUM_JAW_RIBS;
-  // static const int NUM_INNER_LIP_POINTS = 5;
-  // static const int NUM_OUTER_LIP_POINTS = 5;
-  // static const int NUM_LIP_POINTS = NUM_INNER_LIP_POINTS + NUM_OUTER_LIP_POINTS;
+      // Guiding lines for the lip corners.
+      .def_property_readwrite("tongueRib", &VocalTract::tongueRib)
+      .def_property_readwrite("tongueRib", &VocalTract::tongueRib)
+      .def_property_readwrite("tongueRib", &VocalTract::tongueRib)
 
-  // static const int NUM_FILL_RIBS = NUM_JAW_RIBS + 3;
-  // static const int NUM_FILL_POINTS = 4;
+      // Center line, cross sections, and tube sections.
+      .def_property_readwrite("centerLineLength", &VocalTract::centerLineLength)
+      .def_property_readwrite("roughCenterLine", &VocalTract::roughCenterLine)
+      .def_property_readwrite("centerLine", &VocalTract::centerLine)
+      .def_property_readwrite("crossSection", &VocalTract::crossSection)
+      .def_property_readwrite("tubeSection", &VocalTract::tubeSection)
 
-  // static const int NUM_RADIATION_RIBS = NUM_LIP_RIBS + 4;
-  // static const int NUM_RADIATION_POINTS = 6;
+      // Position and opening of the velo-pharyngal port
+      .def_property_readwrite("nasalPortPos_cm", &VocalTract::nasalPortPos_cm)
+      .def_property_readwrite("nasalPortArea_cm2", &VocalTract::nasalPortArea_cm2)
 
-  // // ****************************************************************
-  // // Constants for the cross-sections.
-  // // ****************************************************************
-  
-  // static const int NUM_PROFILE_SAMPLES = 96;  ///< Number of points in lateral direction
-  // static const double PROFILE_LENGTH;
-  // static const double PROFILE_SAMPLE_LENGTH;
-  // static const double INVALID_PROFILE_SAMPLE;
-  // static const double MIN_PROFILE_VALUE;
-  // static const double MAX_PROFILE_VALUE;
-  // static const double EXTREME_PROFILE_VALUE;
+      // Position of the incisors along the center line.
+      .def_property_readwrite("incisorPos_cm", &VocalTract::incisorPos_cm)
 
-  // // ****************************************************************
-  // // Other constants.
-  // // ****************************************************************
+      // Picewise linear approximations of the outer teeth edges
+      .def_property_readwrite("upperGumsInnerEdge", &VocalTract::upperGumsInnerEdge)
+      .def_property_readwrite("upperGumsOuterEdge", &VocalTract::upperGumsOuterEdge)
+      .def_property_readwrite("lowerGumsInnerEdge", &VocalTract::lowerGumsInnerEdge)
+      .def_property_readwrite("lowerGumsOuterEdge", &VocalTract::lowerGumsOuterEdge)
+      .def_property_readwrite("lowerGumsInnerEdgeOrig", &VocalTract::lowerGumsInnerEdgeOrig)
+      .def_property_readwrite("lowerGumsOuterEdgeOrig", &VocalTract::lowerGumsOuterEdgeOrig)
 
-  // static const int NUM_CENTERLINE_POINTS_EXPONENT = 7;
-  // static const int NUM_CENTERLINE_POINTS = (1 << NUM_CENTERLINE_POINTS_EXPONENT) + 1;
-  // static const int NUM_TUBE_SECTIONS = Tube::NUM_PHARYNX_MOUTH_SECTIONS;
-  // /// Coupling section for the nasal cavity.
-  // static const int NUM_PHARYNX_SECTIONS = Tube::NUM_PHARYNX_SECTIONS;
-  // /// Coupling section for the piriformis fossa.
-  // static const int PIRIFORM_FOSSA_SECTION = Tube::NUM_FOSSA_SECTIONS;
-  
-  // // ****************************************************************
-  // // Variables.
-  // // ****************************************************************
+      // ****************************************************************
+      // Initialization.
+      // ****************************************************************
+      .def(py::init<>())
+      // .def(py::init<XmlNode&>())
+      .def("init", &VocalTract::init)
+      .def("init_surface_grids", &VocalTract::initSurfaceGrids)
+      .def("init_reference_surfaces", &VocalTract::initReferenceSurfaces)
+      .def("init_larynx", &VocalTract::initLarynx)
+      .def("init_jaws", &VocalTract::initJaws)
+      .def("init_velum", &VocalTract::initVelum)
+      .def("set_default_ema_points", &VocalTract::setDefaultEmaPoints)
+      // Point3D (int index);
+      .def("get_ema_point_coord", &VocalTract::getEmaPointCoord)
+      // void (int emaSurface, int *min, int *max);
+      .def("get_ema_surface_vertex_range", &VocalTract::getEmaSurfaceVertexRange)
 
-  // Surface surface[NUM_SURFACES];
-  // Param param[NUM_PARAMS];
-  // vector<Shape> shapes;
-  // vector<EmaPoint> emaPoints;
+      // ****************************************************************
+      // Reading and writing of anatomy and shapes from/to xml-files.
+      // ****************************************************************
 
-  // TongueRib tongueRib[MAX_TONGUE_RIBS_GLOBAL];
+      // void (XmlNode *anatomyNode);
+      .def("read_anatomy_xml", &VocalTract::readAnatomyXml)
+      // void (XmlNode *shapeListNode);
+      .def("read_shapes_xml", &VocalTract::readShapesXml)
+      // void (XmlNode& node);
+      .def("read_from_xml", &VocalTract::readFromXml)
+      // void (const string &speakerFileName);
+      .def("read_from_xml", &VocalTract::readFromXml)
+      // void (std::ostream &os, int indent) const;
+      .def("write_anatomy_xml", &VocalTract::writeAnatomyXml)
+      // void (std::ostream &os, int indent) const;
+      .def("write_shapes_xml", &VocalTract::writeShapesXml)
+      // void (std::ostream &os, int indent) const;
+      .def("write_to_xml", &VocalTract::writeToXml)
 
-  // // Guiding lines for the lip corners.
-  // LineStrip3D wideLipCornerPath;
-  // LineStrip3D narrowLipCornerPath;
-  // LineStrip3D lipCornerPath;
+      // bool (const string &fileName, bool saveBothSides = true);
+      .def("save_as_obj_file", &VocalTract::saveAsObjFile)
 
-  // // Center line, cross sections, and tube sections.
-  
-  // double centerLineLength;
-  // CenterLinePoint roughCenterLine[NUM_CENTERLINE_POINTS];
-  // CenterLinePoint centerLine[NUM_CENTERLINE_POINTS];
-  // CrossSection crossSection[NUM_CENTERLINE_POINTS];
-  // TubeSection tubeSection[NUM_TUBE_SECTIONS];
+      // friend std::ostream& operator<<(std::ostream& os, const VocalTract& obj)
+      // {
+      //     obj.writeToXml(os, 0);
+      //     return os;
+      // }
 
-  // // Position and opening of the velo-pharyngal port
-  // double nasalPortPos_cm;
-  // double nasalPortArea_cm2;
+      // // ****************************************************************
+      // // Calculate the surfaces, center line, and area functions
+      // // ****************************************************************
 
-  // // Position of the incisors along the center line.
-  // double incisorPos_cm;
-  
-  // // Picewise linear approximations of the outer teeth edges
-  // Point3D upperGumsInnerEdge[NUM_JAW_RIBS];
-  // Point3D upperGumsOuterEdge[NUM_JAW_RIBS];
-  // Point3D lowerGumsInnerEdge[NUM_JAW_RIBS];
-  // Point3D lowerGumsOuterEdge[NUM_JAW_RIBS];
-  // Point3D lowerGumsInnerEdgeOrig[NUM_JAW_RIBS];
-  // Point3D lowerGumsOuterEdgeOrig[NUM_JAW_RIBS];
+      // void (double *controlParams);
+      .def("set_params", &VocalTract::setParams)
+      .def("calculate_all", &VocalTract::calculateAll)
 
+      // // ****************************************************************
+      // // Calculate all geometric surfaces.
+      // // ****************************************************************
+
+      .def("calc_surfaces", &VocalTract::calcSurfaces)
+      .def("calc_lips", &VocalTract::calcLips)
+      // void (Point3D &onset, Point3D &corner, Point3D &F0, Point3D &F1, double &yClose);
+      .def("get_important_lip_points", &VocalTract::getImportantLipPoints)
+      // void (Point3D lipCorner);
+      .def("calc_radiation", &VocalTract::calcRadiation)
+      // void (Point2D &H, Point2D &T);
+      .def("get_hyoid_tongue_tangent", &VocalTract::getHyoidTongueTangent)
+      .def("calc_tongue", &VocalTract::calcTongue)
+      // double (double paramValue);
+      .def("tongue_side_param_to_elevation_cm", &VocalTract::tongueSideParamToElevation_cm)
+      // double (double paramValue);
+      .def("tongue_side_param_to_min_area_cm2", &VocalTract::tongueSideParamToMinArea_cm2)
+      .def("restrict_tongue_params", &VocalTract::restrictTongueParams)
+      // Point2D (Point2D C, double rx, double ry, LineStrip2D &border, Point2D A);
+      .def("limit_ellipse_pos", &VocalTract::limitEllipsePos)
+      .def("calc_tongue_ribs", &VocalTract::calcTongueRibs)
+      // void (int rigid, int flexible);
+      .def("verify_tongue_rib_normal", &VocalTract::verifyTongueRibNormal)
+
+      // ****************************************************************
+      // Calculate the acoustic center line of the vocal tract.
+      // ****************************************************************
+
+      .def("calc_center_line", &VocalTract::calcCenterLine)
+      // void (int left, int center, int right);
+      .def("verify_center_line_normal", &VocalTract::verifyCenterLineNormal)
+
+      // ****************************************************************
+      // Calculate the piecewise linear area function.
+      // ****************************************************************
+
+      // void ();
+      .def("calc_cross_sections", &VocalTract::calcCrossSections)
+      // void (Point2D P, Point2D v, double *upperProfile, double *lowerProfile,
+      //   bool considerTongue, Tube::Articulator &articulator, bool debug = false);
+      .def("get_cross_profiles", &VocalTract::getCrossProfiles)
+      // void (Point2D P0, Point2D P1, int surfaceIndex,
+      //   double *upperProfile, int *upperProfileSurface);
+      .def("insert_upper_profile_line", &VocalTract::insertUpperProfileLine)
+      // void (Point2D P0, Point2D P1, int surfaceIndex,
+      //   double *lowerProfile, int *lowerProfileSurface);
+      .def("insert_lower_profile_line", &VocalTract::insertLowerProfileLine)
+      // void (Point2D P0, Point2D P1, int surfaceIndex,
+      //   double *upperProfile, int *upperProfileSurface, double *lowerProfile, int *lowerProfileSurface);
+      .def("insert_lower_cover_profile_line", [](VocalTract &self, Point2D P0, Point2D P1, int surfaceIndex,
+                                                 double *upperProfile, int *upperProfileSurface)
+           { &VocalTract::insertLowerCoverProfileLine })
+
+      .def("get_cross_section", [](VocalTract &self, std::array<double, VocalTract::NUM_PROFILE_SAMPLES> &upperProfile, std::array<double, VocalTract::NUM_PROFILE_SAMPLES> &lowerProfile)
+           {
+        auto section = new VocalTract::CrossSection();
+        self.getCrossSection(upperProfile.data(),lowerProfile.data(),section);
+        return section; }, "upper_profile"_a, "lower_profile"_a, py::return_value_policy::take_ownership)
+
+      // bool (const string &fileName);
+      .def("export_cross_sections", &VocalTract::exportCrossSections, "file_name"_a)
+      // bool (const string &fileName, bool addCenterLine, bool addCutVectors);
+      // .def("export_tract_contour_svg", &VocalTract::exportTractContourSvg)
+      // void (ostream &os, Surface *s, int rib, int firstRibPoint, int lastRibPoint);
+      // .def("add_rib_points_svg", &VocalTract::addRibPointsSvg)
+      // void (ostream &os, Surface *s, int firstRib, int lastRib, int ribPoint);
+      // .def("add_ribs_svg", &VocalTract::addRibsSvg)
+
+      // ****************************************************************
+      // Calculate the piecewise constant area function.
+      // ****************************************************************
+      .def("cross_sections_to_tube_sections", &VocalTract::crossSectionsToTubeSections)
+
+      // ****************************************************************
+      // Functions mainly for calls from outside this class.
+      // ****************************************************************
+
+      .def("get_shape_index", &VocalTract::getShapeIndex, "name"_a)
+      .def("is_vowel_shape_name", &VocalTract::isVowelShapeName, "name"_a)
+      .def("get_pharynx_back_x", &VocalTract::getPharynxBackX, "y"_a)
+      .def("get_tube", [](VocalTract &self)
+           {
+              auto tube = new Tube();
+              self.getTube(tube);
+              return tube; }, "q"_a, py::return_value_policy::take_ownership)
+      .def("get_center_line_pos", [](VocalTract &self, Point2D Q)
+           {
+              int bestIndex;
+              double bestT;
+              double closestPos = self.getCenterLinePos(Q,bestIndex,bestT);
+              return py::make_tuple(closestPos, bestIndex, bestT); }, "q"_a, py::return_value_policy::take_ownership)
+      .def("get_cut_vector", [](VocalTract &self, double pos)
+           {
+            auto P = new Point2D(); 
+            auto v = new Point2D();
+            self.getCutVector(pos, *P, *v);
+            return py::make_tuple(P, v); }, "pos"_a, py::return_value_policy::take_ownership)
+      .def("restrict_param", &VocalTract::restrictParam, "index"_a)
+      .def("has_unsaved_changes", &VocalTract::hasUnsavedChanges)
+      .def("clear_unsaved_changes", &VocalTract::clearUnsavedChanges)
+
+      .def("store_control_params", &VocalTract::storeControlParams)
+      .def("restore_control_params", &VocalTract::restoreControlParams);
 
   // ****************************************************************
-  // Initialization.
+  // Identifier for the different surfaces.
   // ****************************************************************
 
-  // void init();    ///< Is automatically called by the constructor.
-  // void initSurfaceGrids();
-  // void initReferenceSurfaces();
-  // void initLarynx();
-  // void initJaws();
-  // void initVelum();
-  // void setDefaultEmaPoints();
-  // Point3D getEmaPointCoord(int index);
-  // void getEmaSurfaceVertexRange(int emaSurface, int *min, int *max);
-
-  // // ****************************************************************
-  // // Reading and writing of anatomy and shapes from/to xml-files.
-  // // ****************************************************************
-
-  // void readAnatomyXml(XmlNode *anatomyNode);
-  // void readShapesXml(XmlNode *shapeListNode);
-  // void readFromXml(XmlNode& node);
-  // void readFromXml(const string &speakerFileName);
-  // void writeAnatomyXml(std::ostream &os, int indent) const;
-  // void writeShapesXml(std::ostream &os, int indent) const;
-  // void writeToXml(std::ostream &os, int indent) const;
-
-  // bool saveAsObjFile(const string &fileName, bool saveBothSides = true);
-
-  // friend std::ostream& operator<<(std::ostream& os, const VocalTract& obj)
+  // enum SurfaceIndex
   // {
-  //     obj.writeToXml(os, 0);
-  //     return os;
-  // }
-
-
-  // // ****************************************************************
-  // // Calculate the surfaces, center line, and area functions
-  // // ****************************************************************
-
-  // void setParams(double *controlParams);
-  // void calculateAll();
-  
-  // // ****************************************************************
-  // // Calculate all geometric surfaces.
-  // // ****************************************************************
-
-  // void calcSurfaces();
-  // void calcLips();
-  // void getImportantLipPoints(Point3D &onset, Point3D &corner, Point3D &F0, Point3D &F1, double &yClose);
-  // void calcRadiation(Point3D lipCorner);
-  // void getHyoidTongueTangent(Point2D &H, Point2D &T);
-  // void calcTongue();
-  // double tongueSideParamToElevation_cm(double paramValue);
-  // double tongueSideParamToMinArea_cm2(double paramValue);
-  // void restrictTongueParams();
-  // Point2D limitEllipsePos(Point2D C, double rx, double ry, LineStrip2D &border, Point2D A);
-  // void calcTongueRibs();
-  // void verifyTongueRibNormal(int rigid, int flexible);
-  
-  // // ****************************************************************
-  // // Calculate the acoustic center line of the vocal tract.
-  // // ****************************************************************
-
-  // void calcCenterLine();
-  // void verifyCenterLineNormal(int left, int center, int right);
-
-  // // ****************************************************************
-  // // Calculate the piecewise linear area function.
-  // // ****************************************************************
-
-  // void calcCrossSections();
-  // void getCrossProfiles(Point2D P, Point2D v, double *upperProfile, double *lowerProfile, 
-  //   bool considerTongue, Tube::Articulator &articulator, bool debug = false);
-  // void insertUpperProfileLine(Point2D P0, Point2D P1, int surfaceIndex, 
-  //   double *upperProfile, int *upperProfileSurface);
-  // void insertLowerProfileLine(Point2D P0, Point2D P1, int surfaceIndex, 
-  //   double *lowerProfile, int *lowerProfileSurface);
-  // void insertLowerCoverProfileLine(Point2D P0, Point2D P1, int surfaceIndex,
-  //   double *upperProfile, int *upperProfileSurface, double *lowerProfile, int *lowerProfileSurface);
-  // void getCrossSection(double *upperProfile, double *lowerProfile, CrossSection *section);
-  
-  // bool exportCrossSections(const string &fileName);
-  // bool exportTractContourSvg(const string &fileName, bool addCenterLine, bool addCutVectors);
-  // void addRibPointsSvg(ostream &os, Surface *s, int rib, int firstRibPoint, int lastRibPoint);
-  // void addRibsSvg(ostream &os, Surface *s, int firstRib, int lastRib, int ribPoint);
-
-  // // ****************************************************************
-  // // Calculate the piecewise constant area function.  
-  // // ****************************************************************
-
-  // void crossSectionsToTubeSections();
-
-  // // ****************************************************************
-  // // Functions mainly for calls from outside this class.
-  // // ****************************************************************
-
-  // int getShapeIndex(const string &name);
-  // bool isVowelShapeName(const string &name);
-  // double getPharynxBackX(double y);
-  // void getTube(Tube *tube);
-  // double getCenterLinePos(Point2D Q, int &bestIndex, double &bestT);
-  // void getCutVector(double pos, Point2D &P, Point2D &v);
-  // void restrictParam(int index);
-  // bool hasUnsavedChanges();
-  // void clearUnsavedChanges();
-
-  // void storeControlParams();
-  // void restoreControlParams();
-
-
-  // // ****************************************************************
-  // // Identifier for the different surfaces.
-  // // ****************************************************************
-
-  // enum SurfaceIndex 
-  // { 
-  //   UPPER_TEETH, LOWER_TEETH, 
+  //   UPPER_TEETH, LOWER_TEETH,
   //   UPPER_COVER, LOWER_COVER,
   //   UPPER_LIP, LOWER_LIP,
   //   PALATE, MANDIBLE, LOWER_TEETH_ORIGINAL,
@@ -254,12 +314,12 @@ PYBIND11_MODULE(vocaltractlab, m)
   //   TONGUE,
   //   UPPER_COVER_TWOSIDE,
   //   LOWER_COVER_TWOSIDE,
-  //   UPPER_TEETH_TWOSIDE, 
-  //   LOWER_TEETH_TWOSIDE, 
-  //   UPPER_LIP_TWOSIDE, 
+  //   UPPER_TEETH_TWOSIDE,
+  //   LOWER_TEETH_TWOSIDE,
+  //   UPPER_LIP_TWOSIDE,
   //   LOWER_LIP_TWOSIDE,
-  //   LEFT_COVER,        ///< Fill surface between the upper and lower teeth 
-  //   RIGHT_COVER,       ///< Fill surface between the upper and lower teeth 
+  //   LEFT_COVER,        ///< Fill surface between the upper and lower teeth
+  //   RIGHT_COVER,       ///< Fill surface between the upper and lower teeth
   //   UVULA_ORIGINAL,
   //   UVULA,
   //   UVULA_TWOSIDE,
@@ -310,7 +370,7 @@ PYBIND11_MODULE(vocaltractlab, m)
   //   double upperTeethHeight_cm[NUM_PALATE_RIBS];
   //   double upperTeethWidthTop_cm[NUM_PALATE_RIBS];
   //   double upperTeethWidthBottom_cm[NUM_PALATE_RIBS];
-    
+
   //   Point2D jawFulcrum;
   //   Point2D jawRestPos;
   //   double toothRootLength_cm;
@@ -369,7 +429,7 @@ PYBIND11_MODULE(vocaltractlab, m)
   // } anatomy;
 
   // // ****************************************************************
-  // // A vocal tract shape or configuration, for example for the 
+  // // A vocal tract shape or configuration, for example for the
   // // vowels [i], [a], [u].
   // // ****************************************************************
 
@@ -442,7 +502,7 @@ PYBIND11_MODULE(vocaltractlab, m)
   //   EMA_SURFACE_LOWER_COVER,
   //   EMA_SURFACE_UPPER_LIP,
   //   EMA_SURFACE_LOWER_LIP,
-  //   NUM_EMA_SURFACES    
+  //   NUM_EMA_SURFACES
   // };
 
   // struct EmaPoint
@@ -453,28 +513,28 @@ PYBIND11_MODULE(vocaltractlab, m)
   //   int vertexIndex;
   // };
 
-    //     py::enum_<VocalTract::AnatomyParameters>(vocal_tract, "Kind")
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::LIP_WIDTH)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::MANDIBLE_HEIGHT)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::LOWER_MOLARS_HEIGHT)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::UPPER_MOLARS_HEIGHT)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::PALATE_HEIGHT)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::PALATE_DEPTH)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::HARD_PALATE_LENGTH)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::SOFT_PALATE_LENGTH)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::PHARYNX_LENGTH)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::LARYNX_LENGTH)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::LARYNX_WIDTH)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::VOCAL_FOLD_LENGTH)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::ORAL_PHARYNGEAL_ANGLE)
-    //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::NUM_ANATOMY_PARAMS)
-    //         .export_values();
+  //     py::enum_<VocalTract::AnatomyParameters>(vocal_tract, "Kind")
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::LIP_WIDTH)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::MANDIBLE_HEIGHT)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::LOWER_MOLARS_HEIGHT)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::UPPER_MOLARS_HEIGHT)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::PALATE_HEIGHT)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::PALATE_DEPTH)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::HARD_PALATE_LENGTH)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::SOFT_PALATE_LENGTH)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::PHARYNX_LENGTH)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::LARYNX_LENGTH)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::LARYNX_WIDTH)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::VOCAL_FOLD_LENGTH)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::ORAL_PHARYNGEAL_ANGLE)
+  //         .value("LIP_WIDTH", VocalTract::AnatomyParameters::NUM_ANATOMY_PARAMS)
+  //         .export_values();
 
-    // py::class_<VocalTract::Param>(vocal_tract, "VocalTract")
-    //     .def_readwrite("name", &VocalTract::Param::name)
-    //     .def_readwrite("abbr", &VocalTract::Param::abbr)
-    //     .def_readwrite("unit", &VocalTract::Param::unit)
-    //     .def_readwrite("min", &VocalTract::Param::min)
-    //     .def_readwrite("max", &VocalTract::Param::max)
-    //     .def_readwrite("x", &VocalTract::Param::x);
+  // py::class_<VocalTract::Param>(vocal_tract, "VocalTract")
+  //     .def_readwrite("name", &VocalTract::Param::name)
+  //     .def_readwrite("abbr", &VocalTract::Param::abbr)
+  //     .def_readwrite("unit", &VocalTract::Param::unit)
+  //     .def_readwrite("min", &VocalTract::Param::min)
+  //     .def_readwrite("max", &VocalTract::Param::max)
+  //     .def_readwrite("x", &VocalTract::Param::x);
 }
