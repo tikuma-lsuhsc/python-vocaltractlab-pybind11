@@ -7,5 +7,7 @@ pybind11_add_module(${PROJECT_NAME}
     TwoMassModel.cpp
     GlottisFactory.cpp
     VocalTract.cpp
+    Geometry.cpp
     AnatomyParams.cpp
+    Surface.cpp
 )

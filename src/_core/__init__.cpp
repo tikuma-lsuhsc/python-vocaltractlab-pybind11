@@ -11,7 +11,8 @@ namespace vocaltractlab
     extern void initGeometricGlottis(py::module &);
     extern void initTriangularGlottis(py::module &m);
     extern void initTwoMassModel(py::module &m);
-    void initGlottisFactory(py::module &m);
+    extern void initGlottisFactory(py::module &m);
+    extern void initGeometry(py::module &m);
 
     PYBIND11_MODULE(_core, m)
     {
@@ -22,5 +23,6 @@ namespace vocaltractlab
         initTriangularGlottis(m);
         initTwoMassModel(m);
         initGlottisFactory(m);
+        initGeometry(m);
     }
 }
