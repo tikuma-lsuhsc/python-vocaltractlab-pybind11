@@ -131,7 +131,7 @@ namespace vocaltractlab
             .def("get_length", &Line2D::getLength)
             .def("encloses", &Line2D::encloses)
             .def_property_readonly("end_points_", [](Line2D &self)
-                                   { return py::array(2, self.P, py::cast(self)); }, py::return_value_policy::reference_internal);
+                                   { return py::array(py::dtype("object"), 2, self.P, py::cast(self)); }, py::return_value_policy::reference_internal);
 
         
         // ****************************************************************************
@@ -150,7 +150,7 @@ namespace vocaltractlab
             .def("get_point", &Line3D::getPoint)
             .def("get_length", &Line3D::getLength)
             .def_property_readonly("end_points", [](Line3D &self)
-                                   { return py::array(2, self.P, py::cast(self)); }, py::return_value_policy::reference_internal);
+                                   { return py::array(py::dtype("object"), 2, self.P, py::cast(self)); }, py::return_value_policy::reference_internal);
 
         // ****************************************************************************
         // A circle.
@@ -184,7 +184,7 @@ namespace vocaltractlab
             .def_readwrite("m", &Circle::M)
             .def_readwrite("r", &Circle::r)
             .def_property_readonly("end_points", [](Circle &self)
-                                   { return py::array(2, self.arcAngle, py::cast(self)); }, py::return_value_policy::reference_internal);
+                                   { return py::array(py::dtype("object"), 2, self.arcAngle, py::cast(self)); }, py::return_value_policy::reference_internal);
 
         m.def("get_circle_tangent", &getCircleTangent, "point"_a, "center"_a, "radius"_a, "clockwise"_a = false);
 

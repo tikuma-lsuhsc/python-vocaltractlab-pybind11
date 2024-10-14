@@ -1,9 +1,10 @@
-#include <array>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <fmt/format.h>
 
 #include <VocalTractLabBackend/VocalTract.h>
+
+#include "util.h"
 
 using namespace fmt::literals;
 namespace py = pybind11;
@@ -67,35 +68,31 @@ void initGlottis(py::module &m)
       // ****************************************************************
 
       // .def_readwrite("surface", &VocalTract::surface)
-      .def_property_readonly("surface", [](VocalTract &self)
-                              { return py::array(self.NUM_SURFACES, self.surface, py::cast(self)); }, py::return_value_policy::reference_internal)
+      .def_property_readonly("surface", as_std_span(VocalTract, surface), py::return_value_policy::reference_internal)
       // .def_readwrite("param", &VocalTract::param)
-      .def_property_readonly("param", [](VocalTract &self)
-                              { return py::array(self.NUM_PARAMS, self.param, py::cast(self)); }, py::return_value_policy::reference_internal)
+      .def_property_readonly("param", as_std_span(VocalTract, param), py::return_value_policy::reference_internal)
       .def_readwrite("shapes", &VocalTract::shapes)
-      .def_readwrite("emaPoints", &VocalTract::emaPoints)
+      .def_readwrite("ema_points", &VocalTract::emaPoints)
 
-      .def_readwrite("tongueRib", &VocalTract::tongueRib)
+      .def_property_readonly("tongue_rib", as_std_span(VocalTract, tongueRib), py::return_value_policy::reference_internal)
 
       // Guiding lines for the lip corners.
-      .def_readwrite("tongueRib", &VocalTract::tongueRib)
-      .def_readwrite("tongueRib", &VocalTract::tongueRib)
-      .def_readwrite("tongueRib", &VocalTract::tongueRib)
+      .def_readwrite("wide_lip_corner_path", &VocalTract::wideLipCornerPath)
+      .def_readwrite("narrow_lip_corner_path", &VocalTract::narrowLipCornerPath)
+      .def_readwrite("lip_corner_path", &VocalTract::lipCornerPath)
 
       // Center line, cross sections, and tube sections.
-      .def_readwrite("centerLineLength", &VocalTract::centerLineLength)
+      .def_readwrite("center_line_length", &VocalTract::centerLineLength)
       // .def_readwrite("roughCenterLine", &VocalTract::roughCenterLine)
-      .def_property_readonly("rough_center_line", [](VocalTract &self)
-                              { return py::array(self.NUM_CENTERLINE_POINTS, self.roughCenterLine, py::cast(self)); }, py::return_value_policy::reference_internal)
+      .def_property_readonly("rough_center_line", as_std_span(VocalTract, roughCenterLine), py::return_value_policy::reference_internal)
       // .def_readwrite("centerLine", &VocalTract::centerLine)
-      .def_property_readonly("center_line", [](VocalTract &self)
-                              { return py::array(self.NUM_CENTERLINE_POINTS, self.centerLine, py::cast(self)); }, py::return_value_policy::reference_internal)
+      .def_property_readonly("center_line", as_std_span(VocalTract, centerLine), py::return_value_policy::reference_internal)
       // .def_readwrite("crossSection", &VocalTract::crossSection)
       .def_property_readonly("cross_section", [](VocalTract &self)
-                              { return py::array(self.NUM_CENTERLINE_POINTS, self.crossSection, py::cast(self)); }, py::return_value_policy::reference_internal)
+                             { return py::array(self.NUM_CENTERLINE_POINTS, self.crossSection, py::cast(self)); }, py::return_value_policy::reference_internal)
       // .def_readwrite("tubeSection", &VocalTract::tubeSection)
       .def_property_readonly("tube_section", [](VocalTract &self)
-                              { return py::array(self.NUM_TUBE_SECTIONS, self.tubeSection, py::cast(self)); }, py::return_value_policy::reference_internal)
+                             { return py::array(self.NUM_TUBE_SECTIONS, self.tubeSection, py::cast(self)); }, py::return_value_policy::reference_internal)
 
       // Position and opening of the velo-pharyngal port
       .def_readwrite("nasalPortPos_cm", &VocalTract::nasalPortPos_cm)
@@ -106,23 +103,17 @@ void initGlottis(py::module &m)
 
       // Picewise linear approximations of the outer teeth edges
       // .def_readwrite("upperGumsInnerEdge", &VocalTract::upperGumsInnerEdge)
-      .def_property_readonly("upper_gums_inner_edge", [](VocalTract &self)
-                              { return py::array(self.NUM_JAW_RIBS, self.upperGumsInnerEdge, py::cast(self)); }, py::return_value_policy::reference_internal)
+      .def_property_readonly("upper_gums_inner_edge", as_std_span(VocalTract,upperGumsInnerEdge), py::return_value_policy::reference_internal)
       // .def_readwrite("upperGumsOuterEdge", &VocalTract::upperGumsOuterEdge)
-      .def_property_readonly("upper_gums_outer_edge", [](VocalTract &self)
-                              { return py::array(self.NUM_JAW_RIBS, self.upperGumsOuterEdge, py::cast(self)); }, py::return_value_policy::reference_internal)
+      .def_property_readonly("upper_gums_outer_edge", as_std_span(VocalTract,upperGumsOuterEdge), py::return_value_policy::reference_internal)
       // .def_readwrite("lowerGumsInnerEdge", &VocalTract::lowerGumsInnerEdge)
-      .def_property_readonly("lower_gums_inner_edge", [](VocalTract &self)
-                              { return py::array(self.NUM_JAW_RIBS, self.lowerGumsInnerEdge, py::cast(self)); }, py::return_value_policy::reference_internal)
+      .def_property_readonly("lower_gums_inner_edge", as_std_span(VocalTract, lowerGumsInnerEdge), py::return_value_policy::reference_internal)
       // .def_readwrite("lowerGumsOuterEdge", &VocalTract::lowerGumsOuterEdge)
-      .def_property_readonly("lower_gums_outer_edge", [](VocalTract &self)
-                              { return py::array(self.NUM_JAW_RIBS, self.lowerGumsOuterEdge, py::cast(self)); }, py::return_value_policy::reference_internal)
+      .def_property_readonly("lower_gums_outer_edge", as_std_span(VocalTract,lowerGumsOuterEdge), py::return_value_policy::reference_internal)
       // .def_readwrite("lowerGumsInnerEdgeOrig", &VocalTract::lowerGumsInnerEdgeOrig)
-      .def_property_readonly("lower_gums_inner_edge_orig", [](VocalTract &self)
-                              { return py::array(self.NUM_JAW_RIBS, self.lowerGumsInnerEdgeOrig, py::cast(self)); }, py::return_value_policy::reference_internal)
+      .def_property_readonly("lower_gums_inner_edge_orig", as_std_span(VocalTract,lowerGumsInnerEdgeOrig), py::return_value_policy::reference_internal)
       // .def_readwrite("lowerGumsOuterEdgeOrig", &VocalTract::lowerGumsOuterEdgeOrig)
-      .def_property_readonly("lower_gums_outer_edge_orig", [](VocalTract &self)
-                              { return py::array(self.NUM_JAW_RIBS, self.lowerGumsOuterEdgeOrig, py::cast(self)); }, py::return_value_policy::reference_internal)
+      .def_property_readonly("lower_gums_outer_edge_orig", as_std_span(VocalTract,lowerGumsOuterEdgeOrig), py::return_value_policy::reference_internal)
 
       // ****************************************************************
       // Initialization.
@@ -226,9 +217,7 @@ void initGlottis(py::module &m)
       .def("insert_lower_profile_line", &VocalTract::insertLowerProfileLine)
       // void (Point2D P0, Point2D P1, int surfaceIndex,
       //   double *upperProfile, int *upperProfileSurface, double *lowerProfile, int *lowerProfileSurface);
-      .def("insert_lower_cover_profile_line", [](VocalTract &self, Point2D P0, Point2D P1, int surfaceIndex,
-                                                 py::array_t<double, py::array::c_style> upperProfile,
-                                                 py::array_t<double, py::array::c_style> lowerProfile)
+      .def("insert_lower_cover_profile_line", [](VocalTract &self, Point2D P0, Point2D P1, int surfaceIndex, py::array_t<double, py::array::c_style> upperProfile, py::array_t<double, py::array::c_style> lowerProfile)
            {
             std::array<int, VocalTract::NUM_PROFILE_SAMPLES> upperProfileSurface;
             std::array<int, VocalTract::NUM_PROFILE_SAMPLES> lowerProfileSurface;
