@@ -35,7 +35,7 @@ namespace vocaltractlab
             .def_readwrite("sequence", &Surface::sequence)
 
             // Information about the tiles ************************************
-            .def_readwrite("tile", &Surface::tile)
+            .def_property_readonly("tile", [](Surface &self) { return std::span(std::span(self.tile));}, py::return_value_policy::reference_internal)
             .def_readwrite("left_border", &Surface::leftBorder)
             .def_readwrite("right_border", &Surface::rightBorder)
             .def_readwrite("top_border", &Surface::topBorder)

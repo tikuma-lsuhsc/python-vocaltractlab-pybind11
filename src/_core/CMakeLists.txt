@@ -10,4 +10,5 @@ pybind11_add_module(${PROJECT_NAME}
     Geometry.cpp
     AnatomyParams.cpp
     Surface.cpp
+    Tube.cpp
 )
