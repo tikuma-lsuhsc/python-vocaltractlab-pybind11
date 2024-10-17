@@ -1,10 +1,14 @@
+#include <VocalTractLabBackend/Geometry.h>
 #include <array>
 #include <fmt/core.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 
-#include <VocalTractLabBackend/Geometry.h>
+#include "util.h"
+
+PYBIND11_MAKE_OPAQUE(std::vector<Point2D>)
 
 namespace py = pybind11;
 using namespace py::literals;
@@ -121,7 +125,6 @@ void initGeometry(py::module &m) {
 	             "q"_a)
 	        .def("__repr__", &formatPoint3D);
 
-
 	// ****************************************************************************
 	// A 2D vector with a basis point and a vector.
 	// ****************************************************************************
@@ -130,7 +133,7 @@ void initGeometry(py::module &m) {
 	        .def(py::init<Point2D, Point2D>(), "p"_a, "v"_a)
 	        .def("set", &Vector2D::set, "p"_a, "v"_a)
 	        .def(
-	                "get_interaction",
+	                "get_intersection",
 	                [](Vector2D &self, Vector2D &V) {
 		                double t;
 		                auto p = self.getIntersection(V, t);
@@ -138,7 +141,7 @@ void initGeometry(py::module &m) {
 	                },
 	                "v"_a)
 	        .def(
-	                "get_interaction",
+	                "get_intersection",
 	                [](Vector2D &self, Line2D &L) {
 		                double t;
 		                bool ok;
@@ -147,7 +150,7 @@ void initGeometry(py::module &m) {
 	                },
 	                "line"_a)
 	        .def(
-	                "get_interaction",
+	                "get_intersection",
 	                [](Vector2D &self, Line3D &L) {
 		                double t;
 		                bool ok;
@@ -156,8 +159,8 @@ void initGeometry(py::module &m) {
 	                },
 	                "line"_a)
 	        .def("normalize", &Vector2D::normalize)
-	        .def("get_point", &Vector2D::getPoint)
-	        .def("get_length", &Vector2D::getLength)
+	        .def("get_point", &Vector2D::getPoint, "position"_a)
+	        .def("get_length", &Vector2D::getLength, "position"_a)
 	        .def("is_not_null", &Vector2D::isNotNull)
 	        .def_readwrite("p", &Vector2D::P)
 	        .def_readwrite("v", &Vector2D::v)
@@ -172,7 +175,7 @@ void initGeometry(py::module &m) {
 	        .def(py::init<Point2D, Point2D>(), "p0"_a, "p1"_a)
 	        .def("set", &Line2D::set, "p0"_a, "p1"_a)
 	        .def(
-	                "get_interaction",
+	                "get_intersection",
 	                [](Line2D &self, Vector2D &V) {
 		                double t;
 		                bool ok;
@@ -181,7 +184,7 @@ void initGeometry(py::module &m) {
 	                },
 	                "vector"_a)
 	        .def(
-	                "get_interaction",
+	                "get_intersection",
 	                [](Line2D &self, Line2D &L) {
 		                double t;
 		                bool ok;
@@ -189,17 +192,15 @@ void initGeometry(py::module &m) {
 		                return py::make_tuple(p, t, ok);
 	                },
 	                "line"_a)
-	        .def("get_point", &Line2D::getPoint)
+	        .def("get_point", &Line2D::getPoint, "position"_a)
 	        .def("get_length", &Line2D::getLength)
-	        .def("encloses", &Line2D::encloses)
-	        .def_property_readonly(
-	                "end_points_",
-	                [](Line2D &self) {
-		                return py::array(py::dtype("object"), 2, self.P,
-		                                 py::cast(self));
-	                },
-	                py::return_value_policy::reference_internal)
-	        .def("__repr__", &formatLine2D);
+	        .def("encloses", &Line2D::encloses, "point"_a)
+	        .def_property_readonly("end_points_",
+	                               as_std_vector_ref(Line2D, Point2D, P, 2),
+	                               py::return_value_policy::reference_internal)
+	        .def("__repr__", &formatLine2D)
+	        .def("__getitem__", getitem_1d(Line2D, P, 2), "i"_a,
+	             py::return_value_policy::reference_internal);
 
 
 	// ****************************************************************************
@@ -210,7 +211,7 @@ void initGeometry(py::module &m) {
 	        .def(py::init<Point3D, Point3D>(), "p0"_a, "p1"_a)
 	        .def("set", &Line3D::set, "p0"_a, "p1"_a)
 	        .def(
-	                "get_interaction",
+	                "get_intersection",
 	                [](Line3D &self, Vector2D &V) {
 		                double t;
 		                bool ok;
@@ -218,15 +219,11 @@ void initGeometry(py::module &m) {
 		                return py::make_tuple(p, t, ok);
 	                },
 	                "vector"_a)
-	        .def("get_point", &Line3D::getPoint)
+	        .def("get_point", &Line3D::getPoint, "position"_a)
 	        .def("get_length", &Line3D::getLength)
-	        .def_property_readonly(
-	                "end_points",
-	                [](Line3D &self) {
-		                return py::array(py::dtype("object"), 2, self.P,
-		                                 py::cast(self));
-	                },
-	                py::return_value_policy::reference_internal)
+	        .def_property_readonly("end_points_",
+	                               as_std_vector_ref(Line2D, Point3D, P, 2),
+	                               py::return_value_policy::reference_internal)
 	        .def("__repr__", &formatLine3D);
 
 	// ****************************************************************************
@@ -242,7 +239,7 @@ void initGeometry(py::module &m) {
 	        .def("get_point", &Circle::getPoint, "angle"_a)
 	        .def("get_normal", &Circle::getNormal, "angle"_a)
 	        .def(
-	                "get_interaction",
+	                "get_intersection",
 	                [](Circle &self, Vector2D &V) {
 		                double intersectionAngle;
 		                bool ok;
@@ -251,7 +248,7 @@ void initGeometry(py::module &m) {
 	                },
 	                "vector"_a)
 	        .def(
-	                "get_interaction",
+	                "get_intersection",
 	                [](Circle &self, Line2D &L) {
 		                double intersectionAngle;
 		                bool ok;
