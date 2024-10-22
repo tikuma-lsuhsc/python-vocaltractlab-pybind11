@@ -221,9 +221,9 @@ void initGeometry(py::module &m) {
 	                "vector"_a)
 	        .def("get_point", &Line3D::getPoint, "position"_a)
 	        .def("get_length", &Line3D::getLength)
-	        .def_property_readonly("end_points_",
-	                               as_std_vector_ref(Line2D, Point3D, P, 2),
-	                               py::return_value_policy::reference_internal)
+	        // .def_property_readonly("end_points_",
+	        //                        as_std_vector_ref(Line2D, Point3D, P, 2),
+	        //                        py::return_value_policy::reference_internal)
 	        .def("__repr__", &formatLine3D);
 
 	// ****************************************************************************

@@ -48,7 +48,7 @@ ignore = []
 
 [tool.scikit-build.metadata.version]
 provider = "scikit_build_core.metadata.regex"
-input = "src/_core/version.h"
+input = "src/vocaltractlab/_core/version.h"
 regex = "^#define VERSION (?P<value>[0-9a-z.]+)$"
 
 [tool.scikit-build]
