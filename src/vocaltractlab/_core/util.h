@@ -5,7 +5,7 @@
 #define as_std_span(cls, var) [](cls &self) { return std::span(self.var); }
 #define as_std_span_sz(cls, var, size) \
 	[](cls &self) { return std::span(self.var, size); }
-#define as_std_vector_ref(cls, var_cls, var, size)                                \
+#define as_std_vector_ref(cls, var_cls, var, size)                            \
 	[](cls &self) {                                                           \
 		return std::vector<std::reference_wrapper<var_cls>>(self.var,         \
 		                                                    self.var + size); \
@@ -20,6 +20,13 @@
 		if (i < 0) i += size;                                                \
 		if (i < 0 || i >= size) throw py::index_error("Index out of range"); \
 		return &self.var[i];                                                 \
+	}
+
+#define setitem_1d(cls, var, size)                                           \
+	[](const cls &self, long i, const cls &val) {                            \
+		if (i < 0) i += size;                                                \
+		if (i < 0 || i >= size) throw py::index_error("Index out of range"); \
+		self.var[i] = val;                                                   \
 	}
 
 // template <typename T, std::size_t SIZE>

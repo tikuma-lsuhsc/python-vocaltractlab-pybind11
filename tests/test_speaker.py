@@ -1,4 +1,4 @@
-import vocaltractlab as vtl
+import python.vocaltractlab as vtl
 from os import getcwd, path
 
 speaker_file = path.join(getcwd(), "vocaltractlab_backend", "resources", "JD3.speaker")
