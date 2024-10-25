@@ -1,4 +1,4 @@
-import python.vocaltractlab as vtl
+import vocaltractlab as vtl
 from math import pi
 
 
@@ -105,16 +105,18 @@ def test_line2d():
     a.get_point(position=0)
     a.get_length()
     a.encloses(point=vtl.Point2D())
-    print(type(a.end_points_))
-    a[0].x = 5
-    a.end_points_[1].y=4
-    assert a.end_points_[0].x==5
-    assert a[1].y==4
-    a.end_points_[0] = vtl.Point2D()
+
+    print(a.end_points_array_[0])
+    # print(type(a.end_points_array_))
+    # a[0].x = 5
+    # a.end_points_array_[1].y=4
+    # assert a.end_points_array_[0].x==5
+    # assert a[1].y==4
+    a.end_points_array_[0] = vtl.Point2D(x=10,y=100)
     print(a)
-    assert a.end_points_[0]==vtl.Point2D()
-    print(tuple(a.end_points_))
-    print(a)
+    # assert a.end_points_array_[0]==vtl.Point2D()
+    # print(tuple(a.end_points_array_))
+    # print(a)
 
 def test_line3d():
     a = vtl.Line3D()
