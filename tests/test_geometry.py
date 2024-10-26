@@ -106,13 +106,15 @@ def test_line2d():
     a.get_length()
     a.encloses(point=vtl.Point2D())
 
-    print(a.end_points_array_[0])
+    print(a.end_points_[0])
     # print(type(a.end_points_array_))
     # a[0].x = 5
     # a.end_points_array_[1].y=4
     # assert a.end_points_array_[0].x==5
     # assert a[1].y==4
-    a.end_points_array_[0] = vtl.Point2D(x=10,y=100)
+    a.end_points_[0] = vtl.Point2D(x=10,y=100)
+    print(a)
+    a.end_points_[:] = [vtl.Point2D(x=1,y=2),vtl.Point2D(x=3,y=4)]
     print(a)
     # assert a.end_points_array_[0]==vtl.Point2D()
     # print(tuple(a.end_points_array_))

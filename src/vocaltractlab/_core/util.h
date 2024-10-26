@@ -1,18 +1,16 @@
+#pragma once
+
 #include <array>
 #include <pybind11/stl.h>
 #include <span>
 
-#define as_std_span(cls, var) [](cls &self) { return std::span(self.var); }
-#define as_std_span_sz(cls, var, size) \
-	[](cls &self) { return std::span(self.var, size); }
-#define as_std_vector_ref(cls, var_cls, var, size)                            \
-	[](cls &self) {                                                           \
-		return std::vector<std::reference_wrapper<var_cls>>(self.var,         \
-		                                                    self.var + size); \
-	}
-#define as_py_array(cls, var, size)                                            \
-	[](cls &self) {                                                            \
-		return py::array(py::dtype("object"), size, self.var, py::cast(self)); \
+#include "arrayview.h"
+
+#define as_std_span(cls, var_cls, var) \
+	[](cls &self) { return std::span<var_cls>(self.var); }
+
+#define as_numpy_array(cls, var_cls, var, size)                                 \
+	[](cls &self) {                                                             \
 	}
 
 #define getitem_1d(cls, var, size)                                           \

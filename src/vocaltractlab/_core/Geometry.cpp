@@ -4,13 +4,9 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <pybind11/stl_bind.h>
 
-#include <span>
-
+#include "arrayview.h"
 #include "util.h"
-
-PYBIND11_MAKE_OPAQUE(std::vector<Point2D>)
 
 namespace py = pybind11;
 using namespace py::literals;
@@ -44,6 +40,7 @@ std::string formatEllipse2D(const Ellipse2D &self) {
 }
 
 void initGeometry(py::module &m) {
+
 	py::class_<Point2D>(m, "Point2D")
 	        .def(py::init<>())
 	        .def(py::init<double, double>(), "x"_a, "y"_a)
@@ -87,64 +84,7 @@ void initGeometry(py::module &m) {
 	        .def("__repr__", &formatPoint2D);
 
 
-	py::class_<std::span<Point2D>>(m, "Point2DArray")
-	        // .def(py::init<Point2D *>())
-
-	        /// Bare bones interface
-	        .def("__getitem__",
-	             [](const std::span<Point2D> &s, size_t i) {
-		             if (i >= s.size()) { throw py::index_error(); }
-		             return s[i];
-	             })
-	        .def("__setitem__",
-	             [](std::span<Point2D> &s, size_t i, Point2D v) {
-		             if (i >= s.size()) { throw py::index_error(); }
-		             s[i] = v;
-	             })
-	        .def("__len__", &std::span<Point2D>::size)
-	        /// Optional sequence protocol operations
-	        .def(
-	                "__iter__",
-	                [](const std::span<Point2D> &s) {
-		                return py::make_iterator(s.begin(), s.end());
-	                },
-	                py::keep_alive<0, 1>()
-	                /* Essential: keep object alive while iterator exists */)
-	        /// Slicing protocol (optional)
-	        .def("__getitem__",
-	             [](const std::span<Point2D> &s,
-	                const py::slice &slice) -> std::span<Point2D> {
-		             size_t start = 0, stop = 0, step = 0, slicelength = 0;
-		             if (!slice.compute(s.size(), &start, &stop, &step, &slicelength)) {
-			             throw py::error_already_set();
-		             }
-
-		             return s.subspan(start, slicelength);
-	             })
-	        // .def("__setitem__",
-	        //      [](std::span<Point2D> &s, const py::slice &slice,
-	        //         const py::list &value) {
-		    //          size_t start = 0, stop = 0, step = 0, slicelength = 0;
-		    //          if (!slice.compute(s.size(), &start, &stop, &step, &slicelength)) {
-			//              throw py::error_already_set();
-		    //          }
-		    //          if (slicelength != value.size()) {
-			//              throw std::runtime_error("Left and right hand size of slice "
-			//                                       "assignment have different sizes!");
-		    //          }
-		    //          for (size_t i = 0; i < slicelength; ++i) {
-			//              if (!py::isinstance<std::span<Point2D>>(value[i]))
-			// 	             throw std::runtime_error(
-			// 	                     "Right hand items must be all Point2D.");
-			//              s[start] = py::cast<Point2D>(value[i]);
-			//              start += step;
-		    //          }
-	        //      })
-	        /// Comparisons
-	        // .def(py::self == py::self)
-	        // .def(py::self != py::self)
-	        // Could also define py::self + py::self for concatenation, etc.
-	        ;
+	PYBIND11_MAKE_ARRAY_VIEW(m, Point2D); // converts std::span<Point2D>
 
 	// ****************************************************************************
 	// A 3D point.
@@ -186,6 +126,8 @@ void initGeometry(py::module &m) {
 	             py::overload_cast<const Point3D &, const Point3D &>(crossProduct),
 	             "q"_a)
 	        .def("__repr__", &formatPoint3D);
+
+	PYBIND11_MAKE_ARRAY_VIEW(m, Point3D); // converts std::span<Point2D>
 
 	// ****************************************************************************
 	// A 2D vector with a basis point and a vector.
@@ -257,13 +199,7 @@ void initGeometry(py::module &m) {
 	        .def("get_point", &Line2D::getPoint, "position"_a)
 	        .def("get_length", &Line2D::getLength)
 	        .def("encloses", &Line2D::encloses, "point"_a)
-	        // .def_property_readonly("end_points_",
-	        //                        as_std_vector_ref(Line2D, Point2D, P, 2),
-	        //                        py::return_value_policy::reference_internal)
-	        .def_property_readonly("end_points_array_",
-	                               [](Line2D &self) {
-		                               return std::span<Point2D>(self.P);
-	                               })
+	        .def_property_readonly("end_points_", as_std_span(Line2D, , Point2D, P))
 	        .def("__repr__", &formatLine2D)
 	        .def("__getitem__", getitem_1d(Line2D, P, 2), "i"_a,
 	             py::return_value_policy::reference_internal);
@@ -287,9 +223,7 @@ void initGeometry(py::module &m) {
 	                "vector"_a)
 	        .def("get_point", &Line3D::getPoint, "position"_a)
 	        .def("get_length", &Line3D::getLength)
-	        // .def_property_readonly("end_points_",
-	        //                        as_std_vector_ref(Line2D, Point3D, P, 2),
-	        //                        py::return_value_policy::reference_internal)
+	        .def_property_readonly("end_points_", as_std_span(Line3D, , Point3D, P))
 	        .def("__repr__", &formatLine3D);
 
 	// ****************************************************************************
@@ -335,7 +269,7 @@ void initGeometry(py::module &m) {
 	        .def_readwrite("m", &Circle::M)
 	        .def_readwrite("r", &Circle::r)
 	        .def_property_readonly(
-	                "end_points",
+	                "arc_angle",
 	                [](Circle &self) {
 		                return py::array(py::dtype("object"), 2, self.arcAngle,
 		                                 py::cast(self));

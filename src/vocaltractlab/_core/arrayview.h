@@ -1,0 +1,88 @@
+#pragma once
+
+#include <span>
+#include <string>
+#include <vector>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+#include <fmt/core.h>
+
+namespace py = pybind11;
+using namespace py::literals;
+
+template <typename T, std::size_t Extent = std::dynamic_extent>
+void initArrayView(py::module &m, const std::string type_name) {
+
+	py::class_<std::span<T, Extent>>(m, (type_name + "ArrayView").c_str())
+	        /// Bare bones interface
+	        .def("__getitem__",
+	             [](const std::span<T> &s, size_t i) -> T & {
+		             if (i >= s.size()) { throw py::index_error(); }
+		             return s[i];
+	             })
+	        .def("__setitem__",
+	             [](std::span<T> &s, size_t i, T v) {
+		             if (i >= s.size()) { throw py::index_error(); }
+		             s[i] = v;
+	             })
+	        .def("__len__", &std::span<T>::size)
+	        /// Optional sequence protocol operations
+	        .def(
+	                "__iter__",
+	                [](const std::span<T> &s) {
+		                return py::make_iterator(s.begin(), s.end());
+	                },
+	                py::keep_alive<0, 1>()
+	                /* Essential: keep object alive while iterator exists */)
+	        /// Slicing protocol (optional)
+	        .def("__getitem__",
+	             [](const std::span<T> &s, const py::slice &slice) -> std::span<T> {
+		             size_t start = 0, stop = 0, step = 0, slicelength = 0;
+		             if (!slice.compute(s.size(), &start, &stop, &step, &slicelength)) {
+			             throw py::index_error();
+		             }
+
+		             return s.subspan(start, slicelength);
+	             })
+	        .def("__setitem__",
+	             [](std::span<T> &s, const py::slice &slice,
+	                const std::vector<T> &value) {
+		             size_t start = 0, stop = 0, step = 0, slicelength = 0;
+		             if (!slice.compute(s.size(), &start, &stop, &step, &slicelength)) {
+			             throw py::index_error();
+		             }
+
+		             if (slicelength != value.size()) {
+			             throw std::runtime_error("Left and right hand size of slice "
+			                                      "assignment have different sizes!");
+		             }
+
+		             for (size_t i = 0; i < slicelength; ++i) {
+			             s[start] = value[i];
+			             start += step;
+		             }
+	             })
+	        .def("__setitem__",
+	             [](std::span<T> &s, const py::slice &slice, const T &value) {
+		             size_t start = 0, stop = 0, step = 0, slicelength = 0;
+		             if (!slice.compute(s.size(), &start, &stop, &step, &slicelength)) {
+			             throw py::index_error();
+		             }
+
+		             for (size_t i = 0; i < slicelength; ++i) {
+			             s[start] = value;
+			             start += step;
+		             }
+	             })
+	        /// Comparisons
+	        // .def(py::self == py::self)
+	        // .def(py::self != py::self)
+	        // Could also define py::self + py::self for concatenation, etc.
+	        ;
+}
+
+
+#define PYBIND11_MAKE_ARRAY_VIEW(m, type) initArrayView<type>(m, "#type")
+
