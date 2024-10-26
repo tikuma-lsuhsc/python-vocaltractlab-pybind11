@@ -11,6 +11,7 @@
 
 #define as_numpy_array(cls, var_cls, var, size)                                 \
 	[](cls &self) {                                                             \
+		return py::array({size}, {sizeof(var_cls)}, self.var, py::cast(&self)); \
 	}
 
 #define getitem_1d(cls, var, size)                                           \
